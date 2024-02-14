@@ -1,0 +1,11 @@
+extends layout
+
+block content
+  div.home_page_container
+    p.home_page_container_welcome Welcome to Odinbook
+    if currentUser
+      a.home_page_container_enter(href="/chat-room") Enter Chat Room
+    else
+      a.home_page_container_signup(href="/sign-up") Sign Up
+      //- a.home_page_container_signup(href="/demo-user-1") Demo User 1
+      //- a.home_page_container_signup(href="/demo-user-2") Demo User 2

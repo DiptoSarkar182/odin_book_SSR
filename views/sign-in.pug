@@ -1,0 +1,20 @@
+extends layout 
+
+block content 
+    div.signin_form_container
+        h1.signin_form_title= title 
+        form(method='POST' action='').signin_form_main
+          div.signin_form_group_username
+            label(for='username') Username: 
+            input#username(type='text' name='username' required='true')
+          div.signin_form_group_password
+            label(for='password') Password: 
+            input#password(type='password' name='password'  required='true')
+        
+          button.signin_form_button(type="submit") Log In
+        
+
+        if errors
+          ul.error_field
+            for error in errors
+              li!= error
