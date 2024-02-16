@@ -49,9 +49,15 @@ UserSchema.virtual("fullName").get(function (){
     return `${this.firstname} ${this.lastname}`;
 })
 
-UserSchema.virtual("timestamp_formatted").get(function () {
+UserSchema.virtual("timestamp_formatted_").get(function () {
     return DateTime.fromJSDate(this.accountCreatedDate).toLocaleString(
       DateTime.DATETIME_MED
+    );
+});
+
+UserSchema.virtual("timestamp_formatted_without_time").get(function () {
+    return DateTime.fromJSDate(this.accountCreatedDate).toLocaleString(
+      DateTime.DATE_MED
     );
 });
 

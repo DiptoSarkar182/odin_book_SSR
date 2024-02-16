@@ -1,0 +1,25 @@
+extends layout
+
+block content
+
+    div.profile_detail_currentUser
+        h1.profile_detail_currentUser_title!=title
+        div.profile_detail_currentUser_avatar_wrapper
+            img.profile_detail_currentUser_avatar(src=user.files[0].url, alt="Image")
+        p.profile_detail_currentUser_fullname!="Full Name: " + user.fullName
+        p.profile_detail_currentUser_username!="Username: " + user.username
+        p.profile_detail_currentUser_email!="Email Address: " + user.email
+        p.profile_detail_currentUser_email!="Member since " + user.timestamp_formatted_without_time
+        p.profile_detail_currentUser_email!= user.friend_list.length + " Friends"
+        p.my_account_page_editPost
+        - if(currentUser.friend_request.includes(user._id))
+            p This user sent you friend request!
+            div
+                a(href=`/friends/suggested/view-profile/accept-request/${user.id}`) Accept
+            div
+                a(href=`/friends/suggested/view-profile/reject-request/${user.id}`) Reject
+        - else
+            - if (user.friend_request.includes(currentUser._id))
+                a(href=`/friends/suggested/view-profile/cancel-request/${user.id}`) Cancel Request
+            - else
+                a(href=`/friends/suggested/view-profile/add-friend/${user.id}`) Add Friend

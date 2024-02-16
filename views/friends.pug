@@ -1,0 +1,21 @@
+extends layout 
+
+block content
+    h1.view_friends_list_title!= title
+    if friendsList.length === 0
+        div.friend_list_page_no_friend
+            p.friend_list_page_no_friend_p You have no friend.
+    else
+        div.friend_list_page_no_friend
+            p.profile_detail_currentUser_email!= currentUser.friend_list.length + " Friends"
+        each friend in friendsList
+            div.profile_detail_currentUser_avatar_wrapper
+                img.profile_detail_currentUser_avatar(src=friend.files[0].url, alt="Image" style="width: 10%;" )
+            a(href=`/friends/view-profile/${friend.id}`)!=friend.username
+    ul.layout_ul
+        li
+            a.friends_suggested(href="/friends/suggested") Suggested
+        li    
+            a.home_page_container_signup(href="/friends/friend-requests") Friend Requests
+        li    
+            a.home_page_container_signup(href="/friends/search-friends") Search Friends

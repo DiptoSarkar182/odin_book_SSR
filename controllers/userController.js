@@ -134,6 +134,189 @@ exports.sign_in_post =  passport.authenticate(
     }
 );
 
+exports.friends_get = async(req,res,next)=>{
+
+  try {
+    const currentUser = req.user;
+    let friendsList = [];
+    for(let i=0; i<currentUser.friend_list.length; i++){
+        const myFriend = await User.findById(currentUser.friend_list[i]);
+        friendsList.push(myFriend);
+    }
+    return res.render("friends",{
+        title: "Friends List",
+        friendsList: friendsList,
+    })
+  } catch (error) {
+    return next(error)
+  }
+}
+
+exports.suggested_get = async(req,res,next)=>{
+  try {
+    const currentUser = req.user;
+    const users = await User.find({ 
+      _id: { 
+        $ne: currentUser.id, 
+        $nin: currentUser.friend_list,
+      } 
+    }).sort({ username: 1 });
+    return res.render("suggested",{
+      title: "People you may know",
+      users: users,
+    })
+  } catch (error) {
+    return next(error);
+  }
+}
+
+exports.view_others_profile_get = async(req,res,next)=>{
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId); 
+    return res.render("visit-profile",{
+      title: "View Profile",
+      user: user,
+    })
+  } catch (error) {
+    return next(error);
+  }
+  
+}
+
+exports.add_friend_get = async(req,res,next)=>{
+  try {
+    const currentUserID = req.user.id;
+    const sendingRequestTo = req.params.id;
+    const receiverUserDetails = await User.findById(sendingRequestTo);
+    receiverUserDetails.friend_request.push(currentUserID);
+    await receiverUserDetails.save();
+    
+    return res.redirect("/friends/suggested")
+  } catch (error) {
+    return next(error);
+  }
+}
+
+exports.add_friend_from_profile_get = async(req,res,next)=>{
+  try {
+    const currentUserID = req.user.id;
+    const sendingRequestTo = req.params.id;
+    const receiverUserDetails = await User.findById(sendingRequestTo);
+    receiverUserDetails.friend_request.push(currentUserID);
+    await receiverUserDetails.save();
+    
+    return res.redirect(`/friends/suggested/view-profile/${sendingRequestTo}`)
+  } catch (error) {
+    return next(error)
+  }
+}
+
+exports.cancel_request_get = async(req,res,next)=>{
+  try {
+    const currentUser = req.user;
+    const removeRequestFrom = req.params.id;
+    const findId = await User.findById(removeRequestFrom);
+    findId.friend_request.pull(currentUser.id);
+    await findId.save();
+    return res.redirect("/friends/suggested")
+  } catch (error) {
+    return next(error);
+  }
+}
+
+exports.cancel_request_from_profile_get = async(req,res,next)=>{
+  try {
+    const currentUser = req.user;
+    const removeRequestFrom = req.params.id;
+    const findId = await User.findById(removeRequestFrom);
+    findId.friend_request.pull(currentUser.id);
+    await findId.save();
+    return res.redirect(`/friends/suggested/view-profile/${removeRequestFrom}`)
+  } catch (error) {
+    return(next);
+  }
+}
+
+exports.accept_request_get = async(req,res,next)=>{
+  try {
+    const idOfIncomingRequest = req.params.id;
+    const findId = await User.findById(idOfIncomingRequest);
+    const currentUser = req.user;
+    currentUser.friend_list.push(findId.id);
+    await currentUser.save();
+
+    findId.friend_list.push(currentUser.id);
+    await findId.save();
+
+    currentUser.friend_request.pull(findId.id);
+    await currentUser.save();
+    return res.redirect("/friends/suggested");
+  } catch (error) {
+    return next(error);
+  }
+}
+
+exports.accept_request_from_profile_get = async(req,res,next)=>{
+  try {
+    const idOfIncomingRequest = req.params.id;
+    const findId = await User.findById(idOfIncomingRequest);
+    const currentUser = req.user;
+    currentUser.friend_list.push(findId.id);
+    await currentUser.save();
+
+    findId.friend_list.push(currentUser.id);
+    await findId.save();
+
+    currentUser.friend_request.pull(findId.id);
+    await currentUser.save();
+    return res.redirect(`/friends/suggested/view-profile/${idOfIncomingRequest}`)
+  } catch (error) {
+    return next(error);
+  }
+}
+
+exports.reject_request_get = async(req,res,next)=>{
+  try {
+    const idOfIncomingRequest = req.params.id;
+    const currentUser = req.user;
+    const findId = await User.findById(idOfIncomingRequest);
+    currentUser.friend_request.pull(findId.id);
+    await currentUser.save();
+    return res.redirect("/friends/suggested")
+  } catch (error) {
+    return next(error)
+  }
+}
+
+exports.reject_request_from_profile_get = async(req,res,next)=>{
+  try {
+    const idOfIncomingRequest = req.params.id;
+    const currentUser = req.user;
+    const findId = await User.findById(idOfIncomingRequest);
+    currentUser.friend_request.pull(findId.id);
+    await currentUser.save();
+    return res.redirect(`/friends/suggested/view-profile/${idOfIncomingRequest}`)
+  } catch (error) {
+    return next(error)
+  }
+}
+
+
+
+exports.friend_request_page_get = async(req,res,next)=>{
+  try {
+    const currentUser = req.user;
+    let friendRequestList = [];
+    for(let i=0; i<currentUser.friend_request.length; i++){
+      const myFriend = await User.findById(currentUser.friend_request[i]);
+      friendsList.push(myFriend);
+  }
+  } catch (error) {
+    return next(error)
+  }
+}
+
 exports.log_out = (req,res,next)=>{
     req.logout((err)=>{
       if(err){

@@ -8,13 +8,17 @@ html
       a.layout_a(href="/").header OdinBook
       if currentUser
         ul.layout_ul
-          //- li.layout_greeting Hello, #{currentUser.username}
-          li.layout_chat_room
+          li.layout_greeting Hello, #{currentUser.username}
+          li.layout_home
             a(href="/") home
-          li.layout_chat_room
+          li.layout_friends
             a(href="/friends") Friends
-          li.layout_chat_room
+          li.layout_post
             a(href="/posts") Post
+          li.layout_view_profile
+            a(href="/view-profile") View Profile
+          li.layout_settings
+            a(href="/settings") Settings
           li.layout_logout
             a(href="/log-out").logout Logout
 

@@ -1,0 +1,20 @@
+extends layout 
+
+block content
+    h1.view_friends_list_title!= title
+    each user in users
+        div.profile_detail_currentUser_avatar_wrapper
+            img.profile_detail_currentUser_avatar(src=user.files[0].url, alt="Image" style="width: 10%;")
+        a(href=`/friends/suggested/view-profile/${user.id}`)
+            p.profile_detail_currentUser_username!= user.username
+        - if(currentUser.friend_request.includes(user._id))
+            p This user sent you friend request!
+            div
+                a(href=`/friends/suggested/accept-request/${user.id}`) Accept
+            div
+                a(href=`/friends/suggested/reject-request/${user.id}`) Reject
+        - else
+            - if (user.friend_request.includes(currentUser._id))
+                a(href=`/friends/suggested/cancel-request/${user.id}`) Cancel Request
+            - else
+                a(href=`/friends/suggested/add-friend/${user.id}`) Add Friend
