@@ -9,10 +9,12 @@ block content
             p.profile_detail_currentUser_username!= user.username
         - if(currentUser.friend_request.includes(user._id))
             p This user sent you friend request!
+            //- div
+            //-     a(href=`/friends/suggested/accept-request/${user.id}`) Accept
+            //- div
+            //-     a(href=`/friends/suggested/reject-request/${user.id}`) Reject
             div
-                a(href=`/friends/suggested/accept-request/${user.id}`) Accept
-            div
-                a(href=`/friends/suggested/reject-request/${user.id}`) Reject
+                a(href="/friends/friend-requests") Response Here
         - else
             - if (user.friend_request.includes(currentUser._id))
                 a(href=`/friends/suggested/cancel-request/${user.id}`) Cancel Request

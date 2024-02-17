@@ -1,0 +1,25 @@
+extends layout 
+
+block content
+    h1.view_friends_list_title!= "Incoming Request"
+    if friendRequestList.length === 0
+        p No requests yet
+    else
+        each friendRequest in friendRequestList
+            div.profile_detail_currentUser_avatar_wrapper
+                img.profile_detail_currentUser_avatar(src=friendRequest.files[0].url, alt="Image" style="width: 10%;")
+            p.profile_detail_currentUser_username!=friendRequest.username
+            div
+                a(href=`/friends/friend-requests/accept-request/${friendRequest.id}`) Accept
+            div
+                a(href=`/friends/friend-requests/reject-request/${friendRequest.id}`) Reject
+    
+    h1.view_friends_list_title!= "Sent Request"
+    if sentRequest.length === 0
+        p No requests sent
+    else
+        each request in sentRequest
+            div.profile_detail_currentUser_avatar_wrapper
+                img.profile_detail_currentUser_avatar(src=request.files[0].url, alt="Image" style="width: 10%;")
+            p.profile_detail_currentUser_username!=request.username
+            a(href=`/friends/friend-requests/cancel-request/${request.id}`) Cancel Request

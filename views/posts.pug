@@ -1,0 +1,20 @@
+extends layout
+
+block content
+    div.new_blog_form_container
+        h1= title
+        form(method='POST' action='' enctype="multipart/form-data").new_blog_form_main
+            div.new_blog_form_content
+                
+                textarea(name='content' minlength='2' rows='5' cols='30' required='true' placeholder=`Whats on your mind, ${currentUser.firstname}?`)
+                    != (posts === undefined ? '' : posts.content)
+            div.form-new_blog_form_image
+                label(for='image') Image (Max Size Limit 5 MB):
+                input#image.form-control-file(type='file', name='post_image')
+
+            button.new_blog_form_button(type="submit") Post
+
+        if errors
+            ul.error_field
+                for error in errors
+                    li!= error.msg

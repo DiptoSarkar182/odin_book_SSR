@@ -1,0 +1,42 @@
+extends layout 
+
+block content 
+    div.add_friend_form_container
+        h1.add_friend_form_title= title 
+        form(method='POST' action='').add_friend_form_main
+          div.add_friend_form_group_username 
+            input#username(type='text' placeHolder="Search by username" name='username' required='true' minLength=1)
+        
+          button.add_friend_form_button(type="submit") Search
+        if userFound
+            if userFound.friend_request.includes(currentUser.id)
+              h3.add_friend_form_true_title Search Result
+              a.add_friend_form_send_request(href=`/friends/view-profile/${userFound.id}`)!= userFound.username
+              p.add_friend_form_request_sent Friend Request is sent. Wait for response.
+            
+            else if currentUser.friend_request.includes(userFound.id)
+              h3.add_friend_form_true_title Search Result
+              p.add_friend_form_username!= userFound.username
+              p.add_friend_form_request_received This user sent you friend request. Please response.
+
+            else if currentUser.friend_list.includes(userFound.id)
+              h3.add_friend_form_true_title Search Result
+              p.add_friend_form_username!= userFound.username
+              p.add_friend_form_request_received This user is already on your friend list.
+            else
+              h3.add_friend_form_true_title Search Result
+              a.add_friend_form_send_request(href=`/friends/view-profile/${userFound.id}`)!= userFound.username
+            //-   a.add_friend_form_send_request(href=`/add-friend/${userFound.id}`) Send Friend Request
+            //- if ()
+        else if userNotFound
+            h3.add_friend_form_true_title Search Result
+            p.add_friend_form_user_not_found!= userNotFound
+        if successMessage
+            //- h3.add_friend_form_true_title
+            each message in successMessage
+              div.alert.alert_success!= message
+
+        if errors
+          ul.error_field
+            for error in errors
+              li!= error

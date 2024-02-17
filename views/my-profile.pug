@@ -1,0 +1,20 @@
+extends layout
+
+block content
+
+    div.profile_detail_currentUser
+        h1.profile_detail_currentUser_title!=title
+        div.profile_detail_currentUser_avatar_wrapper
+            if currentUser.files.length > 0
+                img.profile_detail_currentUser_avatar(src=currentUser.files[0].url, alt="Image" style="width: 10%;")
+            else
+                img.profile_detail_currentUser_avatar(src='/images/default.png', alt="Image" style="width: 10%;")
+        p.profile_detail_currentUser_fullname!="Full Name: " + currentUser.fullName
+        p.profile_detail_currentUser_username!="Username: " + currentUser.username
+        p.profile_detail_currentUser_email!="Email Address: " + currentUser.email
+        p.my_account_page_editPost
+            a(href=`/view-profile/edit-profile-photo/${currentUser.id}`) Edit Profile Photo
+        p.my_account_page_editPost
+            a(href=`/view-profile/edit-profile/${currentUser.id}`) Edit Profile
+        p.my_account_page_editPost
+            a(href=`/view-profile/change-password/${currentUser.id}`) Change Password
