@@ -19,6 +19,11 @@ const PostSchema = new Schema({
     },
 })
 
+PostSchema.virtual("timestamp_formatted").get(function () {
+  return DateTime.fromJSDate(this.dateCreated).toLocaleString(
+    DateTime.DATETIME_MED
+  );
+});
 
 
 module.exports = mongoose.model("Post", PostSchema);

@@ -13,8 +13,61 @@ block content
         p.profile_detail_currentUser_username!="Username: " + currentUser.username
         p.profile_detail_currentUser_email!="Email Address: " + currentUser.email
         p.my_account_page_editPost
-            a(href=`/view-profile/edit-profile-photo/${currentUser.id}`) Edit Profile Photo
+            a(href=`/view-profile/change-profile-photo/${currentUser.id}`) Change Profile Photo
         p.my_account_page_editPost
             a(href=`/view-profile/edit-profile/${currentUser.id}`) Edit Profile
         p.my_account_page_editPost
             a(href=`/view-profile/change-password/${currentUser.id}`) Change Password
+        h3.posts Posts
+
+        if posts.length > 0
+            each post in posts
+                
+                div.home_page_user_details
+                    span.home_page_username #{currentUser.username}
+                div.home_page_date= post.timestamp_formatted
+                div.home_page_date!= post.content
+                div.home_page_container
+                    if post.files && post.files.length > 0
+                        img.home_page_img(src=post.files[0].url, alt="Image", style="max-width: 50%;")
+                if (post.likes.includes(currentUser.id))
+                    a.post_detail_currentUser_dislike(href=`/view-profile/dislike-post/${post.id}`) (#{post.likes.length}) Dislike it
+                else
+                    a.post_detail_currentUser_like(href=`/view-profile/like-post/${post.id}`) (#{post.likes.length}) Like it
+                
+                each comment in post.comments
+                    div.post_detail_currentUser_commentList
+                        if (comment.user.id == currentUser.id)
+                            span.post_detail_currentUser_comment_author #{comment.user.username}:#{' '}
+                            span.post_detail_currentUser_comment_text !{comment.content}
+                            if (comment.likes.includes(currentUser.id))
+                                a.post_detail_currentUser_dislike(href=`/view-profile/dislike-comment/${comment.id}`) (#{comment.likes.length}) Dislike it
+                            else
+                                a.post_detail_currentUser_like(href=`/view-profile/like-comment/${comment.id}`) (#{comment.likes.length}) Like it
+                            br
+                            a.post_detail_currentUser_delete(href=`/view-profile/delete-comment/${comment._id}`) #{"  "} Delete
+                            br
+                            span.post_detail_currentUser_comment_time #{comment.timestamp_formatted}
+                        else
+                            span.post_detail_currentUser_comment_author #{comment.user.username}:#{' '}
+                            span.post_detail_currentUser_comment_text !{comment.content}
+                            if (comment.likes.includes(currentUser.id))
+                                a.post_detail_currentUser_dislike(href=`/view-profile/dislike-comment/${comment.id}`) (#{comment.likes.length}) Dislike it
+                            else
+                                a.post_detail_currentUser_like(href=`/view-profile/like-comment/${comment.id}`) (#{comment.likes.length}) Like it
+                            br
+                            span.post_detail_currentUser_comment_time #{comment.timestamp_formatted}
+                form(method='POST' action='')
+                    h3 Add Comments
+                    div.post_detail_currentUser_comment_group
+                        label.post_detail_currentUser_addComment(for='comment') Write your comment: 
+                        input.post_detail_currentUser_commentInput#comment(type='text' name='comment' required='true' )
+                        input(type='hidden' name='postId' value=post.id)
+                    button.post_detail_currentUser_submitButton(type='submit') Submit
+                p.my_account_page_deletePost
+                    a(href=`/view-profile/delete-post/${post.id}`) Delete Post
+                p.my_account_page_editPost
+                    a(href=`/view-profile/edit-post/${post.id}`) Edit Post
+                hr
+        else
+            p No posts to show

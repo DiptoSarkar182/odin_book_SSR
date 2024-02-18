@@ -1,4 +1,6 @@
 const User = require('../models/user');
+const Post = require('../models/post');
+const Comment = require('../models/comment');
 const {body, validationResult} = require('express-validator');
 const passport = require('passport');
 const {flash} = require('express-flash');
@@ -134,6 +136,48 @@ exports.sign_in_post =  passport.authenticate(
     }
 );
 
+exports.change_profile_photo_get = (req,res,next)=>{
+  return res.render("edit-profile-photo",{
+    title: "Change profile photo",
+
+  })
+}
+
+exports.change_profile_photo_post = asyncHandler(async(req,res,next)=>{
+  try {
+    const uploader = async (path) => await cloudinary.uploads(path, "odin_book/profile_photo")
+    const currentUserID = req.params.id;
+    let user = await User.findOne({_id:currentUserID});
+    if(user){
+      // Check if files array is not empty
+      if(user.files.length > 0){
+        const publicId = user.files[0].id; 
+        const result = await cloudinary.deleteImage(publicId);
+        await user.updateOne({_id:currentUserID},
+          { $set: { "files": [] } });
+      }
+      if(req.method === 'POST'){
+        const urls = []
+        const files = req.files;
+        for(const file of files){
+            const { path } = file; 
+            const newPath = await uploader(path)
+            urls.push(newPath)
+            fs.unlinkSync(path)
+        }
+        user = await user.updateOne({
+          $set: {
+            files: urls,
+          }
+        },{},{new: true})
+      }
+    }
+    return res.redirect("/view-profile")
+  } catch (error) {
+    return next(error)
+  }
+})
+
 exports.edit_profile_get = async(req,res,next)=>{
   try {
     if(!req.user){
@@ -151,94 +195,69 @@ exports.edit_profile_get = async(req,res,next)=>{
 }
 
 exports.edit_profile_post = [
-  body("first_name")
-     .trim()
-     .isLength({min:4, max:20})
-     .withMessage("First Name is required")
-     .escape(),
-    
-     body("last_name")
-     .trim()
-     .isLength({min:4, max:20})
-     .withMessage("Last Name is required")
-     .escape(),
-    
-     body("username")
-     .trim()
-     .custom(async (value)=>{
-        const user = await User.findOne({username: value});
-        if(user){
-            return await Promise.reject("Username Already Taken!");
+  body("username")
+      .trim()
+      .custom(async (value) => {
+        const user = await User.findOne({ username: value });
+        if (user) {
+          return await Promise.reject("Username already taken");
         }
         return true;
-     }),
-    
-     body('email')
-     .custom(async (value) => {
-       const user = await User.findOne({ email: value });
-       if (user) {
-         return await Promise.reject("Email already taken");
-       }
-       return true;
-     })
-     .isEmail().withMessage('Not a valid e-mail address'),
-    
-      asyncHandler(async(req,res,next)=>{
-        const errors = validationResult(req);
-        try {
-            if (!errors.isEmpty()) {
-                const urls = []
-                const files = req.files;
-                for(const file of files){
-                    const { path } = file; 
-                    fs.unlinkSync(path)
-                }
-                const currentUserID = req.params.id;
-                const user = await User.findById(currentUserID);
-                return res.render("edit-profile", {
-                  title: "Edit your account",
-                  user: user,
-                  errors: errors.array(),
-                });
-              }
-              else{
-                const uploader = async (path) => await cloudinary.uploads(path, "odin_book/profile_photo")
-                const currentUserID = req.params.id;
-                let user = await User.findOne({_id:currentUserID});
-                if(user){
-                  const publicId = user.files[0].id; 
-                  const result = await cloudinary.deleteImage(publicId);
-                  await user.updateOne({_id:currentUserID},
-                    { $set: { "files": [] } });
-                  if(req.method === 'POST'){
-                    const urls = []
-                    const files = req.files;
-                    for(const file of files){
-                        const { path } = file; 
-                        const newPath = await uploader(path)
-                        urls.push(newPath)
-                        fs.unlinkSync(path)
-                    }
-                    user = await user.updateOne({
-                      $set: {
-                        username: req.body.username,
-                        firstname: req.body.first_name,
-                        lastname: req.body.last_name,
-                        email: req.body.email,
-                        files: urls,
-                      }
-                    },{},{new: true})
-                  }
-                }
-                
-                
-          
-                return res.redirect("/view-profile")
-              }
-        } catch (err) {
-            return next(err);
-        }
       })
+      .isLength({ min: 4, max: 20 })
+      .withMessage("Username is required (4-20 characters) ")
+      .escape(),
+
+    body("first_name", "Firstname is required (4-20 characters) ")
+      .trim()
+      .isLength({ min: 4, max: 20 })
+      .escape(),
+
+    body("last_name", "Lastname is required (4-18 characters) ")
+      .trim()
+      .isLength({ min: 4, max: 18 })
+      .escape(),
+
+    body('email')
+    .optional({ checkFalsy: true })
+    .custom(async (value) => {
+      const user = await User.findOne({ email: value });
+      if (user) {
+        return await Promise.reject("Email already taken");
+      }
+      return true;
+    })
+    .isEmail().withMessage('Not a valid e-mail address'),
+
+    async (req, res, next) => {
+      const errors = validationResult(req);
+  
+      if (!errors.isEmpty()) {
+        const currentUserID = req.params.id;
+        const user = await User.findById(currentUserID);
+        return res.render("edit-profile", {
+          title: "Edit your account",
+          user: user,
+          errors: errors.array(),
+        });
+      }
+  
+      try {
+        const currentUserID = req.params.id;
+        let user = await User.findOne({_id:currentUserID});
+        user = await user.updateOne({
+          $set: {
+            username: req.body.username,
+            firstname: req.body.first_name,
+            lastname: req.body.last_name,
+            email: req.body.email,
+          }
+        },{},{new: true})
+        return res.redirect("/view-profile")
+      } catch (err) {
+        return next(err);
+      }
+    },
 ];
 
 exports.change_password_get = (req,res,next)=>{
@@ -343,9 +362,14 @@ exports.suggested_get = async(req,res,next)=>{
 exports.my_profile_get = async(req,res,next)=>{
   try {
     const currentUser = req.user;
+    const posts = await Post.find({user: currentUser.id}).sort({dateCreated: -1});
+    for (let post of posts) {
+      post.comments = await Comment.find({ post: post.id }).sort({dateCreated: -1}).populate("user");
+    }
     return res.render("my-profile",{
       title: `${currentUser.fullName}'s profile`,
       currentUser: currentUser,
+      posts: posts,
     })
   } catch (error) {
     return next(error)
@@ -355,10 +379,18 @@ exports.my_profile_get = async(req,res,next)=>{
 exports.view_others_profile_get = async(req,res,next)=>{
   try {
     const userId = req.params.id;
+    if(userId === req.user.id){
+      return res.redirect("/view-profile");
+    }
+    const posts = await Post.find({user: userId}).sort({dateCreated: -1}).populate("user");
+    for (let post of posts) {
+      post.comments = await Comment.find({ post: post.id }).sort({dateCreated: -1}).populate("user");
+    }
     const user = await User.findById(userId); 
     return res.render("visit-profile",{
       title: "View Profile",
       user: user,
+      posts: posts,
     })
   } catch (error) {
     return next(error);

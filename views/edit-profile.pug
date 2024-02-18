@@ -3,13 +3,13 @@ extends layout
 block content
   div.sign_up_form_container
     h1.sign_up_form_title= title 
-    form(method='POST' action='' enctype="multipart/form-data").sign_up_form_main
+    form(method='POST' action='').sign_up_form_main
         div.sign_up_form_first_name
             label(for='first_name') First Name: 
-            input#first_name(type='text' name='first_name' minlength='3' maxlength='18' required='true' value=(user === undefined ? "" : user.firstname))
+            input#first_name(type='text' name='first_name' minlength='4' maxlength='18' required='true' value=(user === undefined ? "" : user.firstname))
         div.sign_up_form_last_name
             label(for='last_name') Last Name: 
-            input#last_name(type='text' name='last_name' minlength='3' maxlength='18' required='true' value=(user === undefined ? "" : user.lastname))
+            input#last_name(type='text' name='last_name' minlength='4' maxlength='18' required='true' value=(user === undefined ? "" : user.lastname))
         div.sign_up_form_username
             label(for='username') Username: 
             input#username(type='text' name='username' minlength='4' maxlength='18' required='true' value=(user === undefined ? "" : user.username))
@@ -20,3 +20,8 @@ block content
         
         
         button.sign_up_form_button(type='submit') Update Profile
+    
+    if errors
+      ul.error_field
+        each error in errors
+          li= error.msg

@@ -26,3 +26,53 @@ block content
                 a(href=`/friends/suggested/view-profile/cancel-request/${user.id}`) Cancel Request
             - else
                 a(href=`/friends/suggested/view-profile/add-friend/${user.id}`) Add Friend
+        h3.posts Posts
+
+        if posts.length > 0
+            each post in posts
+                
+                div.home_page_user_details
+                    span.home_page_username #{post.user.username}
+                div.home_page_date= post.timestamp_formatted
+                div.home_page_date!= post.content
+                div.home_page_container
+                    if post.files && post.files.length > 0
+                        img.home_page_img(src=post.files[0].url, alt="Image", style="max-width: 50%;")
+                if (post.likes.includes(currentUser.id))
+                    a.post_detail_currentUser_dislike(href=`/dislike-post/${post.id}`) (#{post.likes.length}) Dislike it
+                else
+                    a.post_detail_currentUser_like(href=`/like-post/${post.id}`) (#{post.likes.length}) Like it
+                
+                each comment in post.comments
+                    div.post_detail_currentUser_commentList
+                        if (comment.user.id == currentUser.id)
+                            span.post_detail_currentUser_comment_author #{comment.user.username}:#{' '}
+                            span.post_detail_currentUser_comment_text !{comment.content}
+                            if (comment.likes.includes(currentUser.id))
+                                a.post_detail_currentUser_dislike(href=`/dislike-comment/${comment.id}`) (#{comment.likes.length}) Dislike it
+                            else
+                                a.post_detail_currentUser_like(href=`/like-comment/${comment.id}`) (#{comment.likes.length}) Like it
+                            br
+                            a.post_detail_currentUser_delete(href=`/delete-comment/${comment._id}`) #{"  "} Delete
+                            br
+                            span.post_detail_currentUser_comment_time #{comment.timestamp_formatted}
+                        else
+                            span.post_detail_currentUser_comment_author #{comment.user.username}:#{' '}
+                            span.post_detail_currentUser_comment_text !{comment.content}
+                            if (comment.likes.includes(currentUser.id))
+                                a.post_detail_currentUser_dislike(href=`/dislike-comment/${comment.id}`) (#{comment.likes.length}) Dislike it
+                            else
+                                a.post_detail_currentUser_like(href=`/like-comment/${comment.id}`) (#{comment.likes.length}) Like it
+                            br
+                            span.post_detail_currentUser_comment_time #{comment.timestamp_formatted}
+                form(method='POST' action='')
+                    h3 Add Comments
+                    div.post_detail_currentUser_comment_group
+                        label.post_detail_currentUser_addComment(for='comment') Write your comment: 
+                        input.post_detail_currentUser_commentInput#comment(type='text' name='comment' required='true' )
+                        input(type='hidden' name='postId' value=post.id)
+                    button.post_detail_currentUser_submitButton(type='submit') Submit
+                
+                hr
+        else
+            p No posts to show
