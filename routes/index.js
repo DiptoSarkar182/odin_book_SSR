@@ -67,6 +67,18 @@ router.get("/view-profile/dislike-comment/:id", postController.my_profile_commen
 router.get("/view-profile/delete-comment/:id", postController.my_profile_delete_comment_get);
 
 router.get("/view-profile/edit-post/:id", postController.my_profile_edit_post_get);
+router.post("/view-profile/edit-post/:id", upload.array('post_image',1), postController.my_profile_edit_post_post);
+
+router.get("/friends/suggested/view-profile/like-post/:id_1/:id_2", postController.others_profile_post_like_get);
+router.get("/friends/suggested/view-profile/dislike-post/:id_1/:id_2", postController.others_profile_post_dislike_get);
+
+router.post("/friends/suggested/view-profile/:id", postController.others_profile_add_post_comment);
+
+router.get("/friends/suggested/view-profile/like-comment/:id_1/:id_2", postController.others_profile_comment_like_get);
+router.get("/friends/suggested/view-profile/dislike-comment/:id_1/:id_2", postController.others_profile_comment_dislike_get);
+router.get("/friends/suggested/view-profile/delete-comment/:id_1/:id_2", postController.others_profile_delete_comment_get);
+
+
 
 router.get("/log-out", userController.log_out);
 

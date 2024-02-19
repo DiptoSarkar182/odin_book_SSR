@@ -28,7 +28,6 @@ exports.homepage_get = async(req,res,next)=>{
 
         for (let post of posts) {
             post.comments = await Comment.find({ post: post.id }).sort({dateCreated: -1}).populate("user");
-            console.log(post.comments); 
         }
         res.render("home-page",{
             posts: posts,
@@ -102,6 +101,20 @@ exports.post_like_get = async(req,res,next)=>{
     }
 };
 
+exports.others_profile_post_like_get = async(req,res,next)=>{
+    try {
+        const postId = req.params.id_1;
+        const userId = req.user.id;
+        const redirectUserDirect = req.params.id_2;
+        const posts = await Post.findById(postId);
+        posts.likes.push(userId);
+        await posts.save();
+        return res.redirect(`/friends/suggested/view-profile/${redirectUserDirect}`);
+    } catch (error) {
+        return next(error);
+    }
+};
+
 exports.post_dislike_get = async (req, res, next) => {
     try {
         const postId = req.params.id;
@@ -110,6 +123,20 @@ exports.post_dislike_get = async (req, res, next) => {
         posts.likes.pull(userId);
         await posts.save();
         return res.redirect("/");
+    } catch (error) {
+        return next(error);
+    }
+};
+
+exports.others_profile_post_dislike_get = async(req,res,next)=>{
+    try {
+        const postId = req.params.id_1;
+        const userId = req.user.id;
+        const redirectUserDirect = req.params.id_2;
+        const posts = await Post.findById(postId);
+        posts.likes.pull(userId);
+        await posts.save();
+        return res.redirect(`/friends/suggested/view-profile/${redirectUserDirect}`);
     } catch (error) {
         return next(error);
     }
@@ -137,11 +164,45 @@ exports.add_post_comment = [
     },
 ];
 
+exports.others_profile_add_post_comment = [
+    body("comment", "Comment should have at least two characters")
+    .trim()
+    .isLength({ min: 2 })
+    .escape(),
+    async(req,res,next)=>{
+        try {
+            const postId = req.body.postId;
+            const userId = req.user.id;
+            const redirectUserDirect = req.params.id;
+            const comments = new Comment({
+                content: req.body.comment,
+                user: userId,
+                post: postId,
+            });
+            await comments.save();
+            return res.redirect(`/friends/suggested/view-profile/${redirectUserDirect}`);
+        } catch (error) {
+            return next(error);
+        }
+    },
+];
+
 exports.delete_comment_get = async(req,res,next)=>{
     try {
         const commentId = req.params.id;
         await Comment.findByIdAndDelete(commentId);
         return res.redirect("/")
+    } catch (error) {
+        return next(error)
+    }
+};
+
+exports.others_profile_delete_comment_get = async(req,res,next)=>{
+    try {
+        const commentId = req.params.id_1;
+        const redirectUserDirect = req.params.id_2;
+        await Comment.findByIdAndDelete(commentId);
+        return res.redirect(`/friends/suggested/view-profile/${redirectUserDirect}`);
     } catch (error) {
         return next(error)
     }
@@ -160,6 +221,20 @@ exports.comment_like_get = async(req,res,next)=>{
     }
 };
 
+exports.others_profile_comment_like_get = async(req,res,next)=>{
+    try {
+        const commentId = req.params.id_1;
+        const userId = req.user.id;
+        const redirectUserDirect = req.params.id_2;
+        const comment = await Comment.findById(commentId);
+        comment.likes.push(userId);
+        await comment.save();
+        return res.redirect(`/friends/suggested/view-profile/${redirectUserDirect}`);
+    } catch (error) {
+        return next(error);
+    }
+};
+
 exports.comment_dislike_get = async (req, res, next) => {
     try {
         const commentId = req.params.id;
@@ -168,6 +243,20 @@ exports.comment_dislike_get = async (req, res, next) => {
         comment.likes.pull(userId);
         await comment.save();
         return res.redirect("/");
+    } catch (error) {
+        return next(error);
+    }
+};
+
+exports.others_profile_comment_dislike_get = async (req, res, next) => {
+    try {
+        const commentId = req.params.id_1;
+        const userId = req.user.id;
+        const redirectUserDirect = req.params.id_2;
+        const comment = await Comment.findById(commentId);
+        comment.likes.pull(userId);
+        await comment.save();
+        return res.redirect(`/friends/suggested/view-profile/${redirectUserDirect}`);
     } catch (error) {
         return next(error);
     }
@@ -295,3 +384,57 @@ exports.my_profile_edit_post_get = async(req,res,next)=>{
         return next(error)
     }
 };
+
+exports.my_profile_edit_post_post = [
+    body("content", "Content should have at least 2 characters")
+    .trim()
+    .isLength({ min: 2 })
+    .escape(),
+
+    asyncHandler(async (req, res, next) => {
+        const uploader = async (path) => await cloudinary.uploads(path, "odin_book/post_photo")
+        const postId = req.params.id;
+        let post = await Post.findOne({_id:postId});
+        try {
+    
+        if(post){
+            // Check if files array is not empty
+            if(post.files.length > 0 && req.files.length > 0){
+              const publicId = post.files[0].id; 
+              const result = await cloudinary.deleteImage(publicId);
+              await post.updateOne({_id:postId},
+                { $set: { "files": [] } });
+            }
+            if(req.method === 'POST'){
+              const urls = []
+              const files = req.files;
+              for(const file of files){
+                  const { path } = file; 
+                  const newPath = await uploader(path)
+                  urls.push(newPath)
+                  fs.unlinkSync(path)
+              }
+              if(urls.length === 0 && post.files.length > 0) {
+                urls.push(...post.files);
+                }
+              post = await Post.findOneAndUpdate(
+                { _id: postId },
+                {
+                  $set: {
+                    user: req.user._id,
+                    content: req.body.content,
+                    files: urls,
+                  },
+                },
+                { new: true }
+              );
+            }
+          }
+        return res.redirect("/view-profile");
+           
+        } catch (error) {
+            return next(error);
+        }
+    
+    })
+];

@@ -39,9 +39,9 @@ block content
                     if post.files && post.files.length > 0
                         img.home_page_img(src=post.files[0].url, alt="Image", style="max-width: 50%;")
                 if (post.likes.includes(currentUser.id))
-                    a.post_detail_currentUser_dislike(href=`/dislike-post/${post.id}`) (#{post.likes.length}) Dislike it
+                    a.post_detail_currentUser_dislike(href=`/friends/suggested/view-profile/dislike-post/${post.id}/${user.id}`) (#{post.likes.length}) Dislike it
                 else
-                    a.post_detail_currentUser_like(href=`/like-post/${post.id}`) (#{post.likes.length}) Like it
+                    a.post_detail_currentUser_like(href=`/friends/suggested/view-profile/like-post/${post.id}/${user.id}`) (#{post.likes.length}) Like it
                 
                 each comment in post.comments
                     div.post_detail_currentUser_commentList
@@ -49,20 +49,20 @@ block content
                             span.post_detail_currentUser_comment_author #{comment.user.username}:#{' '}
                             span.post_detail_currentUser_comment_text !{comment.content}
                             if (comment.likes.includes(currentUser.id))
-                                a.post_detail_currentUser_dislike(href=`/dislike-comment/${comment.id}`) (#{comment.likes.length}) Dislike it
+                                a.post_detail_currentUser_dislike(href=`/friends/suggested/view-profile/dislike-comment/${comment.id}/${user.id}`) (#{comment.likes.length}) Dislike it
                             else
-                                a.post_detail_currentUser_like(href=`/like-comment/${comment.id}`) (#{comment.likes.length}) Like it
+                                a.post_detail_currentUser_like(href=`/friends/suggested/view-profile/like-comment/${comment.id}/${user.id}`) (#{comment.likes.length}) Like it
                             br
-                            a.post_detail_currentUser_delete(href=`/delete-comment/${comment._id}`) #{"  "} Delete
+                            a.post_detail_currentUser_delete(href=`/friends/suggested/view-profile/delete-comment/${comment._id}/${user.id}`) #{"  "} Delete
                             br
                             span.post_detail_currentUser_comment_time #{comment.timestamp_formatted}
                         else
                             span.post_detail_currentUser_comment_author #{comment.user.username}:#{' '}
                             span.post_detail_currentUser_comment_text !{comment.content}
                             if (comment.likes.includes(currentUser.id))
-                                a.post_detail_currentUser_dislike(href=`/dislike-comment/${comment.id}`) (#{comment.likes.length}) Dislike it
+                                a.post_detail_currentUser_dislike(href=`/friends/suggested/view-profile/dislike-comment/${comment.id}/${user.id}`) (#{comment.likes.length}) Dislike it
                             else
-                                a.post_detail_currentUser_like(href=`/like-comment/${comment.id}`) (#{comment.likes.length}) Like it
+                                a.post_detail_currentUser_like(href=`/friends/suggested/view-profile/like-comment/${comment.id}/${user.id}`) (#{comment.likes.length}) Like it
                             br
                             span.post_detail_currentUser_comment_time #{comment.timestamp_formatted}
                 form(method='POST' action='')
