@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  h3 Deleting your account will delete all of your personal info, posts and interactivity with other users.
+  form(action="" method="POST")
+    div
+      label(for="password") Enter your password to confirm account deletion:
+      input(type="password" id="password" name="delete_password")
+    button(type="submit") Delete Account

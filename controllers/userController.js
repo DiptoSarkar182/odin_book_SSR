@@ -670,3 +670,87 @@ exports.log_out = (req,res,next)=>{
       return res.redirect("/sign-in");
     })
 }
+
+exports.delete_user_account_get = (req,res,next)=>{
+  if(!req.user){
+    return res.redirect("/sign-in");
+  }
+  return res.render("delete-account",{
+    title: "Delete Account",
+
+  })
+}
+
+exports.delete_user_account_post = [
+  body("delete_password", "Password should be at least 6 characters long")
+    .trim()
+    .isLength({ min: 6 })
+    .custom(async (value, { req }) => {
+      const user = await User.findOne({ _id: req.params.id });
+      const res = await bcrypt.compare(value, user.password);
+      if (!res) {
+        return await Promise.reject("Current password do not match!");
+      }
+      return true;
+    })
+    .escape(),
+
+  async (req, res, next) => {
+    const errors = validationResult(req);
+    try {
+      if (!errors.isEmpty()) {
+        return res.render("delete-account", {
+          title: "Delete Account",
+          errors: errors.array(),
+        });
+      } else {
+        const user = await User.findOne({ _id: req.params.id });
+        const posts = await Post.find({ user: req.params.id });
+        const comments = await Comment.find({ user: req.params.id });
+
+        // Delete user's profile photo
+        if (user.files.length > 0) {
+          const publicId = user.files[0].id;
+          await cloudinary.deleteImage(publicId);
+        }
+
+        // Delete user's posts and associated images
+        for (let post of posts) {
+          if (post.files.length > 0) {
+            const publicId = post.files[0].id;
+            await cloudinary.deleteImage(publicId);
+          }
+          await Post.deleteOne({ _id: post._id });
+        }
+
+        // Delete user's comments
+        for (let comment of comments) {
+          await Comment.deleteOne({ _id: comment._id });
+        }
+
+        // Remove user's ID from other users' friend request and friend list arrays
+        await User.updateMany(
+          {},
+          { $pull: { friend_request: req.params.id, friend_list: req.params.id } }
+        );
+
+        // Remove user's ID from likes array of other users' posts and comments
+        await Post.updateMany(
+          {},
+          { $pull: { likes: req.params.id } }
+        );
+        await Comment.updateMany(
+          {},
+          { $pull: { likes: req.params.id } }
+        );
+
+        // Delete user
+        await User.deleteOne({ _id: req.params.id });
+
+        return res.redirect("/view-profile");
+      }
+    } catch (err) {
+      return next(err);
+    }
+  },
+];

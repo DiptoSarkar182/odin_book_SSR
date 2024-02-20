@@ -13,8 +13,18 @@ const multer = require("multer");
 
 var indexRouter = require('./routes/index');
 
+//Added compression and helmet
+const compression = require("compression");
+const helmet = require("helmet");
 
 var app = express();
+const RateLimit = require("express-rate-limit");
+const limiter = RateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 100000,
+});
+// Applying rate limiter to all requests
+app.use(limiter);
 
 mongoose.set('strictQuery', false);
 const mongoDB = process.env.MONGODB_URI;
@@ -34,6 +44,15 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      "script-src": ["'self'", "code.jquery.com", "cdn.jsdelivr.net"],
+      "img-src": ["'self'", "res.cloudinary.com"] 
+    },
+  }),
+);
+app.use(compression());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(session({

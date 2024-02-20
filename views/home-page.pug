@@ -20,28 +20,32 @@ block content
                 a.post_detail_currentUser_dislike(href=`/dislike-post/${post.id}`) (#{post.likes.length}) Dislike it
             else
                 a.post_detail_currentUser_like(href=`/like-post/${post.id}`) (#{post.likes.length}) Like it
-            each comment in post.comments
-              div.post_detail_currentUser_commentList
-                if (comment.user.id == currentUser.id)
-                  span.post_detail_currentUser_comment_author #{comment.user.username}:#{' '}
-                  span.post_detail_currentUser_comment_text !{comment.content}
-                  if (comment.likes.includes(currentUser.id))
-                    a.post_detail_currentUser_dislike(href=`/dislike-comment/${comment.id}`) (#{comment.likes.length}) Dislike it
+            if post.comments.length > 0
+              h4 Comments
+              each comment in post.comments
+                div.post_detail_currentUser_commentList
+                  if (comment.user.id == currentUser.id)
+                    span.post_detail_currentUser_comment_author #{comment.user.username}:#{' '}
+                    span.post_detail_currentUser_comment_text !{comment.content}
+                    if (comment.likes.includes(currentUser.id))
+                      a.post_detail_currentUser_dislike(href=`/dislike-comment/${comment.id}`) (#{comment.likes.length}) Dislike it
+                    else
+                      a.post_detail_currentUser_like(href=`/like-comment/${comment.id}`) (#{comment.likes.length}) Like it
+                    br
+                    span.post_detail_currentUser_comment_time #{comment.timestamp_formatted}
+                    br
+                    a.post_detail_currentUser_delete(href=`/delete-comment/${comment._id}`) #{"  "} Delete
+                    hr
                   else
-                    a.post_detail_currentUser_like(href=`/like-comment/${comment.id}`) (#{comment.likes.length}) Like it
-                  br
-                  span.post_detail_currentUser_comment_time #{comment.timestamp_formatted}
-                  br
-                  a.post_detail_currentUser_delete(href=`/delete-comment/${comment._id}`) #{"  "} Delete
-                else
-                  span.post_detail_currentUser_comment_author #{comment.user.username}:#{' '}
-                  span.post_detail_currentUser_comment_text !{comment.content}
-                  if (comment.likes.includes(currentUser.id))
-                    a.post_detail_currentUser_dislike(href=`/dislike-comment/${comment.id}`) (#{comment.likes.length}) Dislike it
-                  else
-                    a.post_detail_currentUser_like(href=`/like-comment/${comment.id}`) (#{comment.likes.length}) Like it
-                  br
-                  span.post_detail_currentUser_comment_time #{comment.timestamp_formatted}
+                    span.post_detail_currentUser_comment_author #{comment.user.username}:#{' '}
+                    span.post_detail_currentUser_comment_text !{comment.content}
+                    if (comment.likes.includes(currentUser.id))
+                      a.post_detail_currentUser_dislike(href=`/dislike-comment/${comment.id}`) (#{comment.likes.length}) Dislike it
+                    else
+                      a.post_detail_currentUser_like(href=`/like-comment/${comment.id}`) (#{comment.likes.length}) Like it
+                    br
+                    span.post_detail_currentUser_comment_time #{comment.timestamp_formatted}
+                    hr
           form(method='POST' action='')
             h3 Add Comments
             div.post_detail_currentUser_comment_group

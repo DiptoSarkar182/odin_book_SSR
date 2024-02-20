@@ -19,4 +19,5 @@ If this link takes too long to load, try this one https://odin-book-ssr.adaptabl
 - Implement real-time notification updates with Socket.IO
 - Implement real-time chatting functionality
 - Integrate a frontend framework like React or MarkoJS for enhanced UI and interactivity
-- Improve the visual appeal with CSS styling to make the application more aesthetically pleasing
+- Improve the visual appeal with CSS styling to make the application look good
+- Improve the error handling

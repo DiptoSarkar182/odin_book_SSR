@@ -19,6 +19,8 @@ block content
             a(href=`/view-profile/edit-profile/${currentUser.id}`) Edit Profile
         p.my_account_page_editPost
             a(href=`/view-profile/change-password/${currentUser.id}`) Change Password
+        p.my_account_page_editPost
+            a(href=`/view-profile/delete-account/${currentUser.id}`) Delete Account
         h3.posts Posts
 
         if posts.length > 0

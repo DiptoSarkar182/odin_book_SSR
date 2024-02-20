@@ -78,7 +78,8 @@ router.get("/friends/suggested/view-profile/like-comment/:id_1/:id_2", postContr
 router.get("/friends/suggested/view-profile/dislike-comment/:id_1/:id_2", postController.others_profile_comment_dislike_get);
 router.get("/friends/suggested/view-profile/delete-comment/:id_1/:id_2", postController.others_profile_delete_comment_get);
 
-
+router.get("/view-profile/delete-account/:id", userController.delete_user_account_get);
+router.post("/view-profile/delete-account/:id", userController.delete_user_account_post);
 
 router.get("/log-out", userController.log_out);
 
