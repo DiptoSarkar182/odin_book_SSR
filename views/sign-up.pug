@@ -1,38 +1,38 @@
-extends layout 
 
-block content
-  div.sign_up_form_container
-    h1.sign_up_form_title= title 
-    form(method='POST' action='' enctype="multipart/form-data").sign_up_form_main
-        div.sign_up_form_first_name
-            label(for='first_name') First Name: 
-            input#first_name(type='text' name='first_name' minlength='3' maxlength='18' required='true' value=(user === undefined ? "" : user.firstname))
-        div.sign_up_form_last_name
-            label(for='last_name') Last Name: 
-            input#last_name(type='text' name='last_name' minlength='3' maxlength='18' required='true' value=(user === undefined ? "" : user.lastname))
-        div.sign_up_form_username
-            label(for='username') Username: 
-            input#username(type='text' name='username' minlength='4' maxlength='18' required='true' value=(user === undefined ? "" : user.username))
+div.sign_up_form_container
+h1.sign_up_form_title= title 
+form(method='POST' action='' enctype="multipart/form-data").sign_up_form_main
+    div.sign_up_form_first_name
+        label(for='first_name') First Name: 
+        input#first_name(type='text' name='first_name' minlength='3' maxlength='18' required='true' value=(user === undefined ? "" : user.firstname))
+    div.sign_up_form_last_name
+        label(for='last_name') Last Name: 
+        input#last_name(type='text' name='last_name' minlength='3' maxlength='18' required='true' value=(user === undefined ? "" : user.lastname))
+    div.sign_up_form_username
+        label(for='username') Username: 
+        input#username(type='text' name='username' minlength='4' maxlength='18' required='true' value=(user === undefined ? "" : user.username))
 
-        div.sign_up_form_email
-            label(for='email') Email: 
-            input#email(type='email' name='email'   maxlength='50' required='true' value=(user === undefined ? "" : user.email))
-        
-        
-        div.sign_up_form_password
-            label(for='password') Password: 
-            input#password(type='password' name='password' minlength='6' required='true' )
-        
-        div.sign_up_form_confirm_password
-            label(for='confirmPassword') Confirm Password: 
-            input#confirmPassword(type='password' name='confirmPassword' minlength='6' required='true')
-        div.form_sign_up_form_avatar
-            label(for='avatar') Upload Your Profile Photo (Max Size Limit 5 MB):
-            input#avatar.form-control-file(type='file', name='avatar')
-        
-        button.sign_up_form_button(type='submit') Sign Up
+    div.sign_up_form_email
+        label(for='email') Email: 
+        input#email(type='email' name='email'   maxlength='50' required='true' value=(user === undefined ? "" : user.email))
+    
+    
+    div.sign_up_form_password
+        label(for='password') Password: 
+        input#password(type='password' name='password' minlength='6' required='true' )
+    
+    div.sign_up_form_confirm_password
+        label(for='confirmPassword') Confirm Password: 
+        input#confirmPassword(type='password' name='confirmPassword' minlength='6' required='true')
+    div.form_sign_up_form_avatar
+        label(for='avatar') Upload Your Profile Photo (Max Size Limit 5 MB):
+        input#avatar.form-control-file(type='file', name='avatar')
+    
+    button.sign_up_form_button(type='submit') Sign Up
+span Already have an account? Log in 
+a(href="/sign-in") here
 
-    if errors 
-      ul.error_field
-       for error in errors 
-         li!= error.msg
+if errors 
+    ul.error_field
+    for error in errors 
+        li!= error.msg

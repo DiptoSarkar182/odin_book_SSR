@@ -137,6 +137,9 @@ exports.sign_in_post =  passport.authenticate(
 );
 
 exports.change_profile_photo_get = (req,res,next)=>{
+  if(!req.user){
+    return res.redirect("/sign-in");
+  }
   return res.render("edit-profile-photo",{
     title: "Change profile photo",
 
@@ -195,18 +198,18 @@ exports.edit_profile_get = async(req,res,next)=>{
 }
 
 exports.edit_profile_post = [
-  body("username")
-      .trim()
-      .custom(async (value) => {
-        const user = await User.findOne({ username: value });
-        if (user) {
-          return await Promise.reject("Username already taken");
-        }
-        return true;
-      })
-      .isLength({ min: 4, max: 20 })
-      .withMessage("Username is required (4-20 characters) ")
-      .escape(),
+      body("username")
+        .trim()
+        .custom(async (value, { req }) => {
+          const user = await User.findOne({ username: value });
+          if (user && user._id.toString() !== req.params.id) {
+            return await Promise.reject("Username already taken");
+          }
+          return true;
+        })
+        .isLength({ min: 4, max: 20 })
+        .withMessage("Username is required (4-20 characters) ")
+        .escape(),
 
     body("first_name", "Firstname is required (4-20 characters) ")
       .trim()
@@ -218,16 +221,16 @@ exports.edit_profile_post = [
       .isLength({ min: 4, max: 18 })
       .escape(),
 
-    body('email')
-    .optional({ checkFalsy: true })
-    .custom(async (value) => {
-      const user = await User.findOne({ email: value });
-      if (user) {
-        return await Promise.reject("Email already taken");
-      }
-      return true;
-    })
-    .isEmail().withMessage('Not a valid e-mail address'),
+      body('email')
+      .optional({ checkFalsy: true })
+      .custom(async (value, { req }) => {
+        const user = await User.findOne({ email: value });
+        if (user && user._id.toString() !== req.params.id) {
+          return await Promise.reject("Email already taken");
+        }
+        return true;
+      })
+      .isEmail().withMessage('Not a valid e-mail address'),
 
     async (req, res, next) => {
       const errors = validationResult(req);
@@ -326,6 +329,9 @@ exports.change_password_post = [
 exports.friends_get = async(req,res,next)=>{
 
   try {
+    if(!req.user){
+      return res.redirect("/sign-in");
+    }
     const currentUser = req.user;
     let friendsList = [];
     for(let i=0; i<currentUser.friend_list.length; i++){
@@ -343,6 +349,9 @@ exports.friends_get = async(req,res,next)=>{
 
 exports.suggested_get = async(req,res,next)=>{
   try {
+    if(!req.user){
+      return res.redirect("/sign-in");
+    }
     const currentUser = req.user;
     const users = await User.find({ 
       _id: { 
@@ -361,6 +370,9 @@ exports.suggested_get = async(req,res,next)=>{
 
 exports.my_profile_get = async(req,res,next)=>{
   try {
+    if(!req.user){
+      return res.redirect("/sign-in");
+    }
     const currentUser = req.user;
     const posts = await Post.find({user: currentUser.id}).sort({dateCreated: -1});
     for (let post of posts) {
@@ -378,6 +390,9 @@ exports.my_profile_get = async(req,res,next)=>{
 
 exports.view_others_profile_get = async(req,res,next)=>{
   try {
+    if(!req.user){
+      return res.redirect("/sign-in");
+    }
     const userId = req.params.id;
     if(userId === req.user.id){
       return res.redirect("/view-profile");
@@ -400,6 +415,9 @@ exports.view_others_profile_get = async(req,res,next)=>{
 
 exports.add_friend_get = async(req,res,next)=>{
   try {
+    if(!req.user){
+      return res.redirect("/sign-in");
+    }
     const currentUserID = req.user.id;
     const sendingRequestTo = req.params.id;
     const receiverUserDetails = await User.findById(sendingRequestTo);
@@ -414,6 +432,9 @@ exports.add_friend_get = async(req,res,next)=>{
 
 exports.add_friend_from_profile_get = async(req,res,next)=>{
   try {
+    if(!req.user){
+      return res.redirect("/sign-in");
+    }
     const currentUserID = req.user.id;
     const sendingRequestTo = req.params.id;
     const receiverUserDetails = await User.findById(sendingRequestTo);
@@ -428,6 +449,9 @@ exports.add_friend_from_profile_get = async(req,res,next)=>{
 
 exports.cancel_request_get = async(req,res,next)=>{
   try {
+    if(!req.user){
+      return res.redirect("/sign-in");
+    }
     const currentUser = req.user;
     const removeRequestFrom = req.params.id;
     const findId = await User.findById(removeRequestFrom);
@@ -441,6 +465,9 @@ exports.cancel_request_get = async(req,res,next)=>{
 
 exports.cancel_request_from_profile_get = async(req,res,next)=>{
   try {
+    if(!req.user){
+      return res.redirect("/sign-in");
+    }
     const currentUser = req.user;
     const removeRequestFrom = req.params.id;
     const findId = await User.findById(removeRequestFrom);
@@ -454,6 +481,9 @@ exports.cancel_request_from_profile_get = async(req,res,next)=>{
 
 exports.accept_request_get = async(req,res,next)=>{
   try {
+    if(!req.user){
+      return res.redirect("/sign-in");
+    }
     const idOfIncomingRequest = req.params.id;
     const findId = await User.findById(idOfIncomingRequest);
     const currentUser = req.user;
@@ -473,6 +503,9 @@ exports.accept_request_get = async(req,res,next)=>{
 
 exports.accept_request_from_profile_get = async(req,res,next)=>{
   try {
+    if(!req.user){
+      return res.redirect("/sign-in");
+    }
     const idOfIncomingRequest = req.params.id;
     const findId = await User.findById(idOfIncomingRequest);
     const currentUser = req.user;
@@ -492,6 +525,9 @@ exports.accept_request_from_profile_get = async(req,res,next)=>{
 
 exports.reject_request_get = async(req,res,next)=>{
   try {
+    if(!req.user){
+      return res.redirect("/sign-in");
+    }
     const idOfIncomingRequest = req.params.id;
     const currentUser = req.user;
     const findId = await User.findById(idOfIncomingRequest);
@@ -505,6 +541,9 @@ exports.reject_request_get = async(req,res,next)=>{
 
 exports.reject_request_from_profile_get = async(req,res,next)=>{
   try {
+    if(!req.user){
+      return res.redirect("/sign-in");
+    }
     const idOfIncomingRequest = req.params.id;
     const currentUser = req.user;
     const findId = await User.findById(idOfIncomingRequest);
@@ -518,6 +557,9 @@ exports.reject_request_from_profile_get = async(req,res,next)=>{
 
 exports.unfriend_get = async(req,res,next)=>{
   try {
+    if(!req.user){
+      return res.redirect("/sign-in");
+    }
     const idOfIncomingRequest = req.params.id;
     const findId = await User.findById(idOfIncomingRequest);
     const currentUser = req.user;
@@ -535,6 +577,9 @@ exports.unfriend_get = async(req,res,next)=>{
 
 exports.friend_request_page_get = async(req,res,next)=>{
   try {
+    if(!req.user){
+      return res.redirect("/sign-in");
+    }
     const currentUser = req.user;
     let friendRequestList = [];
     for(let i=0; i<currentUser.friend_request.length; i++){
@@ -556,6 +601,9 @@ exports.friend_request_page_get = async(req,res,next)=>{
 
 exports.cancel_request_friend_request_get = async(req,res,next)=>{
   try {
+    if(!req.user){
+      return res.redirect("/sign-in");
+    }
     const currentUser = req.user;
     const removeRequestFrom = req.params.id;
     const findId = await User.findById(removeRequestFrom);

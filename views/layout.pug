@@ -5,10 +5,10 @@ html
     link(rel='stylesheet', href='/stylesheets/style.css')
   body
     nav.layout_nav
-      a.layout_a(href="/").header OdinBook
+      
       if currentUser
         ul.layout_ul
-          li.layout_greeting Hello, #{currentUser.username}
+          //- li.layout_greeting Hello, #{currentUser.username}
           li.layout_home
             a(href="/") home
           li.layout_friends
@@ -16,17 +16,12 @@ html
           li.layout_post
             a(href="/posts") Post
           li.layout_view_profile
-            a(href="/view-profile") My Profile
+            a(href="/view-profile") #{currentUser.username}
           //- li.layout_settings
           //-   a(href="/settings") Settings
           li.layout_logout
             a(href="/log-out").logout Logout
 
-      else 
-        ul 
-          li.layout_signin
-            a(href="/sign-in") Sign In
-          li.layout_signup
-            a(href="/sign-up") Sign Up
+      
         
     block content

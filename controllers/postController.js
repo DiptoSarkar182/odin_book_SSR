@@ -41,6 +41,9 @@ exports.homepage_get = async(req,res,next)=>{
 
 exports.posts_get = async(req,res,next)=>{
     try {
+        if(!req.user){
+            return res.redirect("/sign-in");
+        }
         const currentUser = req.user;
         return res.render("posts", {
             title: "Create Post",
@@ -90,6 +93,9 @@ exports.posts_post = [
 
 exports.post_like_get = async(req,res,next)=>{
     try {
+        if(!req.user){
+            return res.redirect("/sign-in");
+        }
         const postId = req.params.id;
         const userId = req.user.id;
         const posts = await Post.findById(postId);
@@ -103,6 +109,9 @@ exports.post_like_get = async(req,res,next)=>{
 
 exports.others_profile_post_like_get = async(req,res,next)=>{
     try {
+        if(!req.user){
+            return res.redirect("/sign-in");
+        }
         const postId = req.params.id_1;
         const userId = req.user.id;
         const redirectUserDirect = req.params.id_2;
@@ -117,6 +126,9 @@ exports.others_profile_post_like_get = async(req,res,next)=>{
 
 exports.post_dislike_get = async (req, res, next) => {
     try {
+        if(!req.user){
+            return res.redirect("/sign-in");
+        }
         const postId = req.params.id;
         const userId = req.user.id;
         const posts = await Post.findById(postId);
@@ -130,6 +142,9 @@ exports.post_dislike_get = async (req, res, next) => {
 
 exports.others_profile_post_dislike_get = async(req,res,next)=>{
     try {
+        if(!req.user){
+            return res.redirect("/sign-in");
+        }
         const postId = req.params.id_1;
         const userId = req.user.id;
         const redirectUserDirect = req.params.id_2;
@@ -189,6 +204,9 @@ exports.others_profile_add_post_comment = [
 
 exports.delete_comment_get = async(req,res,next)=>{
     try {
+        if(!req.user){
+            return res.redirect("/sign-in");
+        }
         const commentId = req.params.id;
         await Comment.findByIdAndDelete(commentId);
         return res.redirect("/")
@@ -199,6 +217,9 @@ exports.delete_comment_get = async(req,res,next)=>{
 
 exports.others_profile_delete_comment_get = async(req,res,next)=>{
     try {
+        if(!req.user){
+            return res.redirect("/sign-in");
+        }
         const commentId = req.params.id_1;
         const redirectUserDirect = req.params.id_2;
         await Comment.findByIdAndDelete(commentId);
@@ -210,6 +231,9 @@ exports.others_profile_delete_comment_get = async(req,res,next)=>{
 
 exports.comment_like_get = async(req,res,next)=>{
     try {
+        if(!req.user){
+            return res.redirect("/sign-in");
+        }
         const commentId = req.params.id;
         const userId = req.user.id;
         const comment = await Comment.findById(commentId);
@@ -223,6 +247,9 @@ exports.comment_like_get = async(req,res,next)=>{
 
 exports.others_profile_comment_like_get = async(req,res,next)=>{
     try {
+        if(!req.user){
+            return res.redirect("/sign-in");
+        }
         const commentId = req.params.id_1;
         const userId = req.user.id;
         const redirectUserDirect = req.params.id_2;
@@ -237,6 +264,9 @@ exports.others_profile_comment_like_get = async(req,res,next)=>{
 
 exports.comment_dislike_get = async (req, res, next) => {
     try {
+        if(!req.user){
+            return res.redirect("/sign-in");
+        }
         const commentId = req.params.id;
         const userId = req.user.id;
         const comment = await Comment.findById(commentId);
@@ -250,6 +280,9 @@ exports.comment_dislike_get = async (req, res, next) => {
 
 exports.others_profile_comment_dislike_get = async (req, res, next) => {
     try {
+        if(!req.user){
+            return res.redirect("/sign-in");
+        }
         const commentId = req.params.id_1;
         const userId = req.user.id;
         const redirectUserDirect = req.params.id_2;
@@ -264,6 +297,9 @@ exports.others_profile_comment_dislike_get = async (req, res, next) => {
 
 exports.delete_post_get = async(req,res,next)=>{
     try {
+        if(!req.user){
+            return res.redirect("/sign-in");
+        }
         const postId = req.params.id;
         const post = await Post.findById(postId);
         const comments = await Comment.find({ post: postId });
@@ -288,6 +324,9 @@ exports.delete_post_get = async(req,res,next)=>{
 
 exports.my_profile_like_post = async(req,res,next)=>{
     try {
+        if(!req.user){
+            return res.redirect("/sign-in");
+        }
         const postId = req.params.id;
         const userId = req.user.id;
         const posts = await Post.findById(postId);
@@ -301,6 +340,9 @@ exports.my_profile_like_post = async(req,res,next)=>{
 
 exports.my_profile_dislike_post = async (req, res, next) => {
     try {
+        if(!req.user){
+            return res.redirect("/sign-in");
+        }
         const postId = req.params.id;
         const userId = req.user.id;
         const posts = await Post.findById(postId);
@@ -336,6 +378,9 @@ exports.my_profile_add_post_comment = [
 
 exports.my_profile_comment_like_get = async(req,res,next)=>{
     try {
+        if(!req.user){
+            return res.redirect("/sign-in");
+        }
         const commentId = req.params.id;
         const userId = req.user.id;
         const comment = await Comment.findById(commentId);
@@ -349,6 +394,9 @@ exports.my_profile_comment_like_get = async(req,res,next)=>{
 
 exports.my_profile_comment_dislike_get = async(req,res,next)=>{
     try {
+        if(!req.user){
+            return res.redirect("/sign-in");
+        }
         const commentId = req.params.id;
         const userId = req.user.id;
         const comment = await Comment.findById(commentId);
@@ -362,6 +410,9 @@ exports.my_profile_comment_dislike_get = async(req,res,next)=>{
 
 exports.my_profile_delete_comment_get = async(req,res,next)=>{
     try {
+        if(!req.user){
+            return res.redirect("/sign-in");
+        }
         const commentId = req.params.id;
         await Comment.findByIdAndDelete(commentId);
         return res.redirect("/view-profile");
@@ -372,6 +423,9 @@ exports.my_profile_delete_comment_get = async(req,res,next)=>{
 
 exports.my_profile_edit_post_get = async(req,res,next)=>{
     try {
+        if(!req.user){
+            return res.redirect("/sign-in");
+        }
         const currentUser = req.user;
         const post = await Post.findById(req.params.id)
         

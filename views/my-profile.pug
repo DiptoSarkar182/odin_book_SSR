@@ -12,6 +12,7 @@ block content
         p.profile_detail_currentUser_fullname!="Full Name: " + currentUser.fullName
         p.profile_detail_currentUser_username!="Username: " + currentUser.username
         p.profile_detail_currentUser_email!="Email Address: " + currentUser.email
+        p.profile_detail_currentUser_email!="Member Since: " + currentUser.timestamp_formatted_without_time
         p.my_account_page_editPost
             a(href=`/view-profile/change-profile-photo/${currentUser.id}`) Change Profile Photo
         p.my_account_page_editPost
