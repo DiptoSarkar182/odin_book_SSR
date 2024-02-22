@@ -1,6 +1,6 @@
 # Odin Book SSR
 
-Odin Book SSR is a social media application built with Node.js, Express, and MongoDB. It uses server-side rendering with Pug as the template engine. The application allows users to create an account, add friends, and post updates. The application is built as part of the curriculum for The Odin Project. Live demo https://odin-book-33en.onrender.com.
+Odin Book SSR is a social media application built with Node.js, Express, and MongoDB. It uses server-side rendering with Pug as the template engine. The application allows users to create an account, add friends, and post updates. Live demo https://odin-book-33en.onrender.com.
 If this link takes too long to load, try this one https://odin-book-ssr.adaptable.app/
 
 ## Features
